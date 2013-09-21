@@ -142,9 +142,9 @@
 
 - [dcl][11]
 
-[1]: http://en.wikipedia.org/wiki/Design_Patterns
+[1]: http://ru.wikipedia.org/wiki/Design_Patterns
 [2]: http://todomvc.com/
-[3]: http://en.wikipedia.org/wiki/Aspect-oriented_programming
+[3]: http://ru.wikipedia.org/wiki/Аспектно-ориентированное_программирование
 [4]: https://github.com/briancavalier/aop-jsconf-2013/blob/master/src/aop-simple.js
 [5]: http://cujojs.com/
 [6]: https://github.com/cujojs/meld
