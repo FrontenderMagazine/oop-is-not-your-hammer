@@ -1,84 +1,84 @@
-# Не в ООП сила
+# OOP is not your hammer
 
-Будучи молодым программистом, я выучил первый шаблон проектирования, коим стало наследование. Конечно же, так я познакомился с объектно-ориентированным программированием (ООП). Я был потрясен простой идеей дополнения или изменения поведение объекта посредством замены его небольшой части. В конце концов, я продолжил изучать и применять более сложные [шаблоны проектирования, созданные “бандой четырех”][1], каждый из которых расширял простое наследование. Казалось, что наследование и ООП были ответами на все вопросы проектирования, уже известные или *«еще-нет-но-скоро-столкнусь»*.
+As a young coder, the first design pattern I learned was inheritance.  This was, of course, my introduction to Object Oriented Programming (OOP). I was blown away by the simple idea that I could add or change an object’s behavior by overriding bits of it. I eventually went on to learn and use much more advanced [Design Patterns by the Gang of Four][1], all of which expand upon simple inheritance. It seemed that inheritance and OOP were the answer to all design problems, whether known or *yet-to-be-discovered*.
 
-В 1996, когда я начал работать с JavaScript, я искал способы применения знакомых шаблонов. Вскоре я понял, что JavaScript представляет три препятствия к использовании шаблонов проектирования, основанным на наследовании:
+When I started working in JavaScript back in 1996, I looked for ways to apply these familiar patterns. I soon learned that JavaScript presented three hurdles to inheritance-based design patterns:
 
-- отсутствие формальных интерфейсов;
+- Lack of formal interfaces
 
-- странные цепочки прототипов;
+- Faulty prototype chaining
 
-- отсутствие супер-конструктора
+- Lack of a super construct
 
-Эти препятствия решало бесконечное числом программистов, в том числе и я. К сожалению, попытки применения решений в коде делают конечную цель (шаблоны проектирования, основанные на наследовании) более сложной.
+These hurdles have been tackled by countless programmers, myself included. Unfortunately, throwing code at these issues only makes the ultimate goal (inheritance-based design patterns) more complicated than it should be.
 
-Проблемы также решались предлагаемыми изменениями в языке. Некоторые, вроде `Object.create()` имеют другие замечательные применения, но двигают нас еще дальше от ООП. В JavaScript  есть свой набор инструментов, который можно применять для создания сложных шаблонов.
+They’ve also been tackled via proposed changes to the language. Some, such as `Object.create()`, have other great uses, but we’ve moved on from OOP. JavaScript has it’s own set of tools that we can apply to create advanced patterns.
 
-## Проблема
+## The Problem
 
-Давайте взглянем на простой интернет-магазин. Предположим, у нас есть страница с описанием товара и формой заказа с кнопкой “добавить в корзину”, а также виджет, позволяющий пользователю указать количество товаров.
+Let’s look at a simple ecommerce site. Let’s say we have a page that displays a product and has an order form with an “Add to cart” button, as well as a widget that allows the user to specify a quantity to purchase.
 
-Спроектировать такое приложение достаточно просто. Один с подходов заключается в создании трех составляющих:
+This app would be pretty simple to design. One approach would be to create three components:
 
-- модели, которая олицетворяет предмет в корзине и имеет такие свойства как идентификатор товара и его количество;
+- A model that embodies a shopping cart item and has properties such as productId and quantity.
 
-- одного или нескольких представлений, которые отображают продукт и форму заказа;
+- One or more views that display the product and the order form.
 
-- контроллера, который координирует сделку.
+- A controller that coordinates the transaction.
 
-Вероятно, вы узнали типичный MVC-подобный шаблон. Существует большое количество вариаций MVC и бесконечный [список реализаций][2].
+You probably recognize this as a typical MVC-like pattern. There are lots of variations on MVC and a never-ending [list of implementations][2].
 
-Тем не менее, MVC - не проблема. Настоящая проблема - отдел по продажам. Теперь они хотят оживленную корзину в правой части страницы. Она должна показывать содержимое корзины, динамически добавлять новый товар и пересчитывать стоимость доставки, налоги и общую сумму заказа.
+However, MVC is not the problem. Product Management is. They now want you to display a live shopping cart in the right-hand margin of the page. The live shopping cart must show a list of all of the items in the cart, including the one being added, as well as recalculate the shipping costs, taxes, and the grand total.
 
-Вы можете применить ООП в таком случае, добавив новый контроллер, унаследованный от старого. Новый расширенный контроллер может взаимодействовать с новым представлением корзины посылая ей новый товар и обновленные значения. Тем не менее, в таком подходе есть несколько возможных проблем:
+You could apply OOP here by creating a new controller that inherits from the original. The new extended controller could coordinate with a new shopping cart view, sending it the new item and the newly calculated numbers. However, there are several potential problems with this approach:
 
-- сложность: взаимодействие требует от расширенного контроллера больше логики;
+- Complexity: the coordination required of the extended controller means it has more logic.
 
-- тестирование: задача изолирования расширенного контроллера усугубляется увеличением количества заданий возложенных на него и увеличением количества зависимостей;
+- Testing: the job of isolating the extended controller is exacerbated by the increased number of tasks it must perform and the increased number of dependencies.
 
-- получаемые побочные эффекты: обновление оживленной корзины - это побочный эффект относительно главной задачи контроллера, которая заключается в координировании сделки.
+- Embedded side effect: the updating of the live shopping cart is a side effect to the controllers main task, which is to coordinate the transaction.
 
-Если бы менеджеры по продажам никогда не запрашивали еще одну фичу, влияния этих проблем были бы незначительными, но мы то с вами знаем, что они никогда не перестанут просить новых фич. После нескольких итераций иерархия наследования контроллера, вероятно, станет путаницей перезаписей, условий и разветвлений кода.
+If Product Management never asked for another feature, the impact of these problems would seem quite minor, but as you know, Product Management will never stop asking for new features. After a few iterations, the controller inheritance hierarchy will likely become a convoluted mess of overrides, conditionals, and code forks.
 
-Побочные эффекты для меня  — прямой сигнал к тревоге. Так уж отложилось у меня в голове, что объект, модуль или функция должны делать только одну вещь одновременно. В нашем случае контроллер должен убеждаться что пользовательские данные (идентификатор товара и размер заказа) доставлены на сервер. Координация с интерфейсом динамической корзины относительно этой задачи — побочный эффект.
+Side effects are an immediate red flag to me.  It has been drilled into my brain that an object, a module, or a function should do only one thing at a time. In our case, the controller should ensure that the user’s input (productId and quantity) gets delivered to the server. The coordination with a live, on-screen shopping cart view is a side effect of this task.
 
-Мой мозг немедленно хочет поручить координацию корзины другому компоненту. В итоге эта идея приводит к другим возможным решениям и имеет некоторые интересные преимущества:
+My brain immediately wants to delegate the shopping cart coordination to another component. This idea, as it turns out, leads to other potential solutions and has some interesting benefits:
 
-- сложность: она уменьшается вследствие разделения на несколько отдельных компонентов;
+- Complexity: complexity is reduced by compartmentalizing into separate components.
 
-- тестирование: меньшее количество задач и зависимостей в каждом компоненте означает, что каждый из них легче тестировать;
+- Testing: fewer dependencies and fewer tasks per component means each component is easier to test.
 
-- и никаких побочных эффектов!
+- No side effects!
 
-## Решение 1: события
+## Solution #1: Events
 
-Одним из наиболее популярных паттернов в JavaScript является «издатель-подписчик» или «наблюдатель». Компоненты запрашивают уведомление про событие («подписываются») или продуцируют события («публикуют»). События обычно состоят из строк определенных пространств имен и соответствующим им данным.
+One of the most popular design patterns in JavaScript is the “publish-subscribe” or “event bus” pattern. Components ask to be notified of events (i.e. they “subscribe”) or they emit events (i.e. they “publish”). Events typically consist of “name-spaced” strings and an associated payload.
 
-В нашем примере с интернет-магазином, контроллер может публиковать события вроде «cart.add-item» вместе с данными заказанного товара. Другой компонент —  контроллер корзины, например, может подписываться на событие «cart.add-item» и использовать его для управления корзиной на странице.
+In our ecommerce example, our controller could publish an event such as “cart.add-item” that has product details as its payload.  Some other component, a shopping cart controller for instance, could subscribe to “cart.add-item” events and use them to manage the on-screen shopping cart.
 
-Популярность этого паттерна — хорошее доказательство его работоспособности. Мы успешно поручили новому компоненту задачу координирования корзины на странице и инкапсулировали задачу коммуникации между контроллерами на механизм публикации-подписки. Тем не менее, шаблон «подписчик-обозреватель» имеет свои недостатки, такие как:
+The popularity of this pattern is pretty good proof that it works. We have successfully delegated the task of coordinating the on-screen shopping cart to a new component and have encapsulated the task of communication between the controllers to the publish-subscribe mechanism. However, the publish-subscribe pattern has some drawbacks, as well:
 
-- больше зависимостей: внедрение механизма «издатель-подписчик» добавляет другую зависимость к компонентам. Тестирование теперь требует, чтобы с механизмом «издатель-подписчик» изрядно поизвращались;
+- More dependencies: the introduction of the publish-subscribe mechanism has added another dependency to the components. Testing now requires that the publish-subscribe mechanism be mocked or stubbed.
 
-- не нативная абстракция: события публикуются с помощью продуцирования строчек (с данными) в прозрачный механизм. Инструменты проверки качества кода, включая линтеры, не смогут убедиться, что события приходят к нужным получателям, а средства отладки не смогут отслеживать вызовы от издателей к подписчикам.
+- Non-native abstraction: events are published by emitting strings (with payloads) into an opaque mechanism. Code quality tools, including linters, can’t ensure that events will go to the correct recipients, and debugging tools don’t trace calls from publishers to subscribers.
 
-## Решение 2: АОП
+## Solution #2: AOP
 
-Что такое АОП? [Аспектно-ориентированное программирование][3] (AOP) — это способ не-агрессивного изменения или дополнения поведения методов и функций (в том числе конструкторов). Добавленное поведение называют советом, его можно добавлять до, после или вместо функции, где следует применить совет.
+What is AOP? [Aspect Oriented Programming][3] (AOP) is a means to change the behavior of – or add behavior to – methods and functions (including constructors) non-invasively. The added behavior is called “advice” and can be added before, after, or around the function it advises.
 
-В JavaScrit АОП особенно легок, так как совет инкапсулируется в функциях, а функции являются объектами первого уровня(first-class objects - никогда не встречал такого термина, помогите перевести). Возможно, вы уже использовали АОП, даже не подозревая этого. Следующий код — очень простая форма АОП:
+AOP is particularly easy in JavaScript, since the advice is encapsulated in functions, and functions are first-class objects. You’ve probably already used AOP without knowing it. The following code is a very primitive form of AOP:
  
     var origMethod = someObject.method;
     someObject.method = function myAdvice () {
-        // сделать что-то до выполнения
+        // do something before
         var result = origMethod.apply(this, arguments);
-        // сделать что-то после выполнения
+        // do something after
         return result;
     };
  
-В этом примере функция замены `myAdvise` советует первоначальному методу. Такой тип совета называется советом «вокруг» («arround» advice), потому как он полностью окружает первоначальный метод и может добавлять поведение по всему методу. Вы можете переделать его в форму, которая добавляла бы новое поведение только перед или после первоначального метода.
+In this example, the replacement function, myAdvice, is advising the original method. This type of advice is called “around” advice since it completely surrounds and can add behavior around the original method. You can imagine forms of this in which we wish to only add advice before or after the original method.
 
-На самом деле, вы можете легко создать свою собственную вспомогательную функцию для добавления советов «до» и «после».
+In fact, you can easily create your own helper function to add before and after advice:
  
     function before (f, advice) {
         return function () {
@@ -94,45 +94,45 @@
         };
     }
  
-АОП имеет несколько применений. В функциональных языках вроде JavaScript, одним из них может быть не-агрессивное связывание компонентов. Попробуем использовать эти простые вспомогательные функции в нашем примере с интернет-магазином, чтобы посмотреть как это работает.
+AOP has several applications. In functional languages such as JavaScript, one of these is non-invasive component interconnect. Let’s use these simple helper functions in our ecommerce example to show how this works.
 
-Во-первых, предположим, что в нашем контроллере есть метод `saveItem`, который отвечает при пользовательском клике на кнопке «Добавить в корзину» и отправляет детали заказа на сервер. Давайте также предположим, что у контроллера интерфейса корзины есть метод `addItem`, который принимает детали товара. Мы можем запрограммировать взаимодействие между этими двумя контроллерами с помощью следующего кода:
+First, let’s say that our controller has a method, `saveItem`, that responds when the user clicks the “Add to cart” button and posts the order details to the server. Let’s also assert that the on-screen shopping cart controller has a method, `addItem`, that receives product details. We could code the interaction between these two controllers with the following code:
  
     controller.saveItem = after(controller.saveItem, function () {
         onscreenCart.addItem(this.product);
     });
  
-Что в этом коде хорошего, так это немногим большая декларативность и очевидность происходящего.
+What’s nice about this code is that it’s a bit more declarative, and it’s a bit more obvious what’s happening.
 
-Давайте немного расширим наш сценарий. Как известно, запрос к серверу будет асинхронным, что потребует небольшого интервала между нажатиям пользователя на кнопку «Добавить в корзину» и ответа сервера с результатом. В этом интервале, отдел по продажам хотел бы показывать счетчик в интерфейсе корзины (ну еще бы!).
+Let’s extend the scenario a bit. As we know, the call to the server will be asynchronous, so some time will have elapsed between the time the user clicks the “Add to cart” button and the server returns a result back.  During this time, Product Management would like to show a spinner on the on-screen shopping cart. (Of course!)
 
-Если метод `saveItem` контроллера возвращает `promise`, мы можем использовать его для получения времени, когда нужно спрятать счетчик или удалить товар, если сервер отклонит запрос.
+If the controller’s `saveItem` method returns a promise, we could use that to know when to turn off the spinner or remove the product if the server rejects the post:
  
     controller.saveItem = after(controller.saveItem, function (promise) {
         var product = this.product;
-        onscreenCart.showSpinner(); // показать счетчик
+        onscreenCart.showSpinner(); // show spinner!
         onscreenCart.addItem(product);
         promise.then(
             function () {
-                onscreenCart.hideSpinner(); // спрятать счетчик
+                onscreenCart.hideSpinner(); // hide spinner!
             },
             function (error) {
-                onscreenCart.removeItem(product); // удалить товар
+                onscreenCart.removeItem(product); // remove product!
             }
         );
     });
  
-Этот код действительно легко тестировать. `onScreenCart` не имеет зависимостей с `controller` или механизмом публикации-подписки. Равно как и `controller` не имеет зависимостей ни с `onScreenCart`,  ни с механизмом публикации-подписки. Вышеуказанная функция совета может быть легко протестирована так как не взаимодействуем ни с чем кроме `onScreenCart`.
+This code is really easy to test. `onscreenCart` has no dependencies on `controller` or on a publish-subscribe mechanism. `controller` has no dependencies on `onscreenCart` or the publish-subscribe mechanism, either. The advice function above could easily be tested as well by only stubbing `onscreenCart`!
 
-## Больше информации
+## More info
 
-АОП имеет много других применений и должна быть частью инструментария каждого JavaScript разработчика.
+AOP has many other applications, and should be part of every Javascript developer’s toolkit.
 
-Хотите опробовать АОП? Изучите этот великолепный набор ресурсов про АОП и его реализаций.
+Want to get started with AOP?  Check out these excellent AOP resources and implementations:
 
 - [AOP in 50 LOC][4]
 
-- [cujoJS][5] – [meld][6] ([документация][7])
+- [cujoJS][5] – [meld][6] ([documentation][7])
 
 - [Dojo][8] – dojo/aspect
 
